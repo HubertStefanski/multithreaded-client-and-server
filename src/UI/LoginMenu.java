@@ -10,11 +10,8 @@ public class LoginMenu {
     public JPanel rootPanel;
 
     public LoginMenu() {
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
+        loginButton.addActionListener(actionEvent -> {
 
-            }
         });
     }
 }
