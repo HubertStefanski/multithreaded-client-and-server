@@ -8,13 +8,6 @@ public class AOCDriver {
 
         init();
 
-        JFrame frame = new JFrame("Area Of Circle");
-
-        frame.setContentPane(new LoginMenu().rootPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-
 
     }
 
