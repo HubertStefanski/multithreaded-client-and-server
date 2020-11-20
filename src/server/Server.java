@@ -1,16 +1,21 @@
 package server;
 
-import UI.LoginMenu;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.SQLException;
+import java.util.Date;
 
-import javax.swing.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+public class Server {
 
-public class Server{
-    // Text area for displaying contents
+    private String serverOutputString(String input) {
+        return ("Server-1 @ " + new Date() + ":" + input + "\n");
+    }
 
     public static void main(String[] args) {
+
         new Server();
     }
 
@@ -31,23 +36,31 @@ public class Server{
             outputToClient.writeUTF("Server started at " + new Date() + '\n');
 
 
-
             while (true) {
-                // Receive radius from the client
-                double radius = inputFromClient.readDouble();
+                if (inputFromClient.readUTF() == "" || inputFromClient.readUTF().length() <= 0) {
+                    outputToClient.writeUTF(serverOutputString("student ID cannot be empty"));
+                }
+                if (ServerHelper.authenticate(inputFromClient.readUTF())) {
+                    outputToClient.writeUTF(serverOutputString("student authenticated"));
+                    // Receive radius from the client
+                    double radius = inputFromClient.readDouble();
 
-                // Compute area
-                double area = radius * radius * Math.PI;
+                    // Compute area
+                    double area = radius * radius * Math.PI;
 
-                // Send area back to the client
-                outputToClient.writeDouble(area);
+                    // Send area back to the client
+                    outputToClient.writeDouble(area);
 
-                outputToClient.writeUTF("Radius received from client: " + radius + '\n');
-                outputToClient.writeUTF("Area found: " + area + '\n');
+                    outputToClient.writeUTF(serverOutputString("Radius received from client: " + radius + '\n'));
+                    outputToClient.writeUTF(serverOutputString("Area found: " + area + '\n'));
+                }
+                else{
+                    outputToClient.writeUTF(serverOutputString("cannot authenticate student"));
+                }
             }
-        }
-        catch(IOException ex) {
-            System.err.println(ex);
+        } catch (IOException | SQLException e) {
+
+            e.printStackTrace();
         }
     }
 }
