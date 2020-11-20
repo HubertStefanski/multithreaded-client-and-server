@@ -3,6 +3,7 @@ package client;
 import UI.LoginMenu;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -22,12 +23,16 @@ public class Client {
     }
     JFrame frame = new JFrame("Area Of Circle");
     MainView mainView = new MainView();
+    LoginMenu loginMenu = new LoginMenu();
+
 
 
     public Client() {
+        mainView.rootPanel.add(loginMenu.rootPanel,BorderLayout.WEST);
+        mainView.rootPanel.add(mainView.logArea,BorderLayout.EAST);
         frame.setContentPane(mainView.rootPanel);
+        frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
         frame.setVisible(true);
 
 
