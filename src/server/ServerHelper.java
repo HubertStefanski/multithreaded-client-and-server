@@ -19,6 +19,7 @@ public class ServerHelper {
 
     public static boolean authenticate(String studentID) throws SQLException {
         boolean authFlag = false;
+
         try {
             Connection conn = invokeConnection();
             assert conn != null;

@@ -25,12 +25,14 @@ class ClientHandler extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
         String received;
         String toreturn;
         while (true) {
             try {
-                if (inputFromClient.readUTF().equals("") || inputFromClient.readUTF().length() <= 0) {
+                received = inputFromClient.readUTF();
+                if (received.equals("") || received.length() <= 0) {
                     outputToClient.writeUTF(handlerOutputString("student ID cannot be empty"));
                 }
                 if (ServerHelper.authenticate(inputFromClient.readUTF())) {

@@ -34,6 +34,12 @@ public class Client {
         new Client();
     }
 
+    public void panelSwap(JFrame z, JPanel x, JPanel y) {
+        z.remove(x);
+        z.add(y);
+    }
+
+
 
     public Client() {
         JFrame frame = new JFrame("Area Of Circle");
@@ -41,9 +47,10 @@ public class Client {
         mainView.rootPanel.add(loginMenu.rootPanel, BorderLayout.WEST);
         mainView.rootPanel.add(mainView.logArea, BorderLayout.EAST);
         frame.setContentPane(mainView.rootPanel);
-        frame.setSize(500, 500);
+        frame.setSize(750, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        loginMenu.loginButton.addActionListener(new LoginListener());
 
 
         try {
@@ -55,11 +62,21 @@ public class Client {
 
             // Create an input stream to receive data from the server
             fromServer = new DataInputStream(socket.getInputStream());
-            mainView.logArea.append(fromServer.readUTF());
+
             // Create an output stream to send data to the server
             toServer = new DataOutputStream(socket.getOutputStream());
-            loginMenu.loginButton.addActionListener(new LoginListener());
-            mainView.logArea.append(fromServer.readUTF());
+
+            while (true) {
+                mainView.logArea.append(fromServer.readUTF());
+                try {
+                    if(fromServer.readUTF().contains("student authenticated")){
+//                        panelSwap(frame,loginMenu.rootPanel,aocMenu.rootPanel);
+                        mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
+                        }
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+            }
 
 
         } catch (IOException ex) {
@@ -67,33 +84,37 @@ public class Client {
         }
     }
 
+
     private class LoginListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                // Get the string from the login textBox
-                if (loginMenu.loginField.getText() != null || loginMenu.loginField.getText().length() > 0) {
-
-                    try {
-                        Integer.parseInt(loginMenu.loginField.getText());
-                    } catch (NumberFormatException ex) {
-                        mainView.logArea.append(clientOutputString("ERROR : input must be INT, Try again or Exit"));
-                        return;
-                    }
-
+            if (loginMenu.loginField.getText() != null || loginMenu.loginField.getText().length() > 0) {
+                mainView.logArea.append(clientOutputString("processing login request for " + loginMenu.loginField.getText()));
+                try {
                     toServer.writeUTF(loginMenu.loginField.getText());
-                    toServer.flush();
-                    mainView.logArea.append(clientOutputString("processing login request for " + loginMenu.loginField.getText()));
-//                    if (fromServer.readUTF().contains("student authenticated")){
-//                        mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
-//                    }
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
-
-            } catch (IOException ex) {
-                System.err.println(ex);
+//                while (true){
+//                    try {
+//                        if(fromServer.readUTF().contains("student authenticated")){
+//                            mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
+//                        }
+//                    } catch (IOException ioException) {
+//                        ioException.printStackTrace();
+//                    }
+//                }
+//                try {
+//                    if (fromServer.readUTF().contains("student authenticated")) {
+//
+//                    }
+//                } catch (IOException ioException) {
+//                    ioException.printStackTrace();
+//                }
             }
         }
     }
+
 
     private class AocListener implements ActionListener {
         @Override
