@@ -1,5 +1,6 @@
 package client;
 
+import UI.AOCMenu;
 import UI.LoginMenu;
 import UI.MainView;
 
@@ -12,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 
 public class Client {
@@ -20,10 +22,12 @@ public class Client {
         return ("Client-1 @ " + new Date() + ":" + input + "\n");
     }
 
+    private CountDownLatch latch = new CountDownLatch(1);
     private DataOutputStream toServer;
     private DataInputStream fromServer;
     private final MainView mainView = new MainView();
     private final LoginMenu loginMenu = new LoginMenu();
+    private final AOCMenu aocMenu = new AOCMenu();
 
 
     public static void main(String[] args) {
@@ -58,7 +62,6 @@ public class Client {
             mainView.logArea.append(fromServer.readUTF());
 
 
-
         } catch (IOException ex) {
             mainView.logArea.append(ex.toString() + '\n');
         }
@@ -74,14 +77,18 @@ public class Client {
                     try {
                         Integer.parseInt(loginMenu.loginField.getText());
                     } catch (NumberFormatException ex) {
-                        mainView.logArea.append(clientOutputString("ERROR : input must be INT"));
+                        mainView.logArea.append(clientOutputString("ERROR : input must be INT, Try again or Exit"));
                         return;
                     }
 
                     toServer.writeUTF(loginMenu.loginField.getText());
                     toServer.flush();
                     mainView.logArea.append(clientOutputString("processing login request for " + loginMenu.loginField.getText()));
+//                    if (fromServer.readUTF().contains("student authenticated")){
+//                        mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
+//                    }
                 }
+
             } catch (IOException ex) {
                 System.err.println(ex);
             }

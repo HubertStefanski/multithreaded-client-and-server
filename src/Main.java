@@ -1,6 +1,3 @@
-import UI.LoginDriver;
-import server.Server;
-import client.Client;
 import java.sql.SQLException;
 
 public class Main {
