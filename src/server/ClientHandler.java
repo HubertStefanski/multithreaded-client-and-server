@@ -5,8 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
-import java.util.Date;
+import java.util.Map;
 
 class ClientHandler extends Thread {
     private final DataInputStream inputFromClient;
@@ -14,7 +13,7 @@ class ClientHandler extends Thread {
     private final Socket s;
 
     private String handlerOutputString(String input) {
-        return ("Handler-1 @ " + new Date() + ":" + input + "\n");
+        return ("Handler-1 @ " + ":" + input + "\n");
     }
 
     // Constructor
@@ -25,34 +24,21 @@ class ClientHandler extends Thread {
     }
 
     @Override
-    public void run()
-    {
-        String received;
-        String toreturn;
+    public void run() {
         while (true) {
             try {
-                received = inputFromClient.readUTF();
-                if (received.equals("") || received.length() <= 0) {
+                if (inputFromClient.readUTF().equals("") || inputFromClient.readUTF().length() <= 0) {
                     outputToClient.writeUTF(handlerOutputString("student ID cannot be empty"));
                 }
-                if (ServerHelper.authenticate(inputFromClient.readUTF())) {
-                    outputToClient.writeUTF(handlerOutputString("student authenticated"));
-//                    // Receive radius from the client
-//                    double radius = inputFromClient.readDouble();
-//
-//                    // Compute area
-//                    double area = radius * radius * Math.PI;
-//
-//                    // Send area back to the client
-//                    outputToClient.writeDouble(area);
-//
-//                    outputToClient.writeUTF(handlerOutputString("Radius received from client: " + radius + '\n'));
-//                    outputToClient.writeUTF(handlerOutputString("Area found: " + area + '\n'));
+                String received = inputFromClient.readUTF();
+                if (ServerHelper.authenticate(received)) {
+                    Map map = ServerHelper.getUser(received);
+                    outputToClient.writeUTF(handlerOutputString("Welcome " + map.get("FNAME") + " " + map.get("SNAME")));
                 } else {
                     outputToClient.writeUTF(handlerOutputString("cannot authenticate student"));
                 }
 
-                if (inputFromClient.readUTF().equals("Exit")) {
+                if (inputFromClient.readUTF().equals("EXIT")) {
                     System.out.println("Client " + this.s + " sends exit...");
                     System.out.println("Closing this connection.");
                     this.s.close();
@@ -60,11 +46,10 @@ class ClientHandler extends Thread {
                     break;
                 }
 
-            } catch (IOException | SQLException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
         try {
             // closing resources
             this.inputFromClient.close();

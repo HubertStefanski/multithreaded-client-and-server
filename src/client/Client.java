@@ -34,11 +34,12 @@ public class Client {
         new Client();
     }
 
-    public void panelSwap(JFrame z, JPanel x, JPanel y) {
-        z.remove(x);
-        z.add(y);
+    public void panelSwap(JFrame frame, JPanel oldPanel , JPanel newPanel) {
+        frame.setVisible(false);
+        frame.remove(oldPanel);
+        frame.add(newPanel);
+        frame.setVisible(true);
     }
-
 
 
     public Client() {
@@ -51,6 +52,8 @@ public class Client {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         loginMenu.loginButton.addActionListener(new LoginListener());
+        aocMenu.sendButton.addActionListener(new AocListener());
+        aocMenu.exitButton.addActionListener(new exitListener());
 
 
         try {
@@ -68,16 +71,12 @@ public class Client {
 
             while (true) {
                 mainView.logArea.append(fromServer.readUTF());
-                try {
-                    if(fromServer.readUTF().contains("student authenticated")){
-//                        panelSwap(frame,loginMenu.rootPanel,aocMenu.rootPanel);
-                        mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
-                        }
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+                if (fromServer.readUTF().contains("student authenticated")) {
+                    panelSwap(frame, loginMenu.rootPanel, aocMenu.rootPanel);
+                    mainView.logArea.append(clientOutputString("authenticated and connected"));
+                    mainView.logArea.append(fromServer.readUTF());
+                }
             }
-
 
         } catch (IOException ex) {
             mainView.logArea.append(ex.toString() + '\n');
@@ -95,22 +94,6 @@ public class Client {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-//                while (true){
-//                    try {
-//                        if(fromServer.readUTF().contains("student authenticated")){
-//                            mainView.rootPanel.add(aocMenu.rootPanel, BorderLayout.WEST);
-//                        }
-//                    } catch (IOException ioException) {
-//                        ioException.printStackTrace();
-//                    }
-//                }
-//                try {
-//                    if (fromServer.readUTF().contains("student authenticated")) {
-//
-//                    }
-//                } catch (IOException ioException) {
-//                    ioException.printStackTrace();
-//                }
             }
         }
     }
@@ -137,6 +120,18 @@ public class Client {
             } catch (IOException ex) {
                 System.err.println(ex);
             }
+        }
+    }
+
+    private class exitListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                toServer.writeUTF("EXIT");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            System.exit(0);
         }
     }
 }

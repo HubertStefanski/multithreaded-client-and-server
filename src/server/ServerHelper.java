@@ -1,6 +1,7 @@
 package server;
 
 import java.sql.*;
+import java.util.Map;
 
 public class ServerHelper {
 
@@ -17,7 +18,8 @@ public class ServerHelper {
         }
     }
 
-    public static boolean authenticate(String studentID) throws SQLException {
+
+    public static boolean authenticate (String studentID) {
         boolean authFlag = false;
 
         try {
@@ -30,6 +32,11 @@ public class ServerHelper {
 
             if (rs.next()) {
                 authFlag = true;
+                int totreq = rs.getInt("TOT_REQ");
+                totreq+=1;
+
+                String updatequery = String.format("UPDATE `students` SET TOT_REQ = %s  WHERE `STUD_ID` = %s",totreq,studentID);
+                stat.executeQuery(updatequery);
             }
             rs.close();
             stat.close();
@@ -39,6 +46,33 @@ public class ServerHelper {
             System.out.println(e);
         }
         return authFlag;
+
+    }
+
+    public static Map<String, String> getUser(String studentID) {
+        Map<String, String> map = null;
+
+        try {
+            Connection conn = invokeConnection();
+            assert conn != null;
+            Statement stat = conn.createStatement();
+
+            String query = String.format("SELECT * FROM `students` WHERE `STUD_ID` = %s",studentID);
+            ResultSet rs = stat.executeQuery(query);
+
+            if (rs.next()) {
+                map.put("STUD_ID", rs.getString("STUD_ID"));
+                map.put("FNAME", rs.getString("FNAME"));
+                map.put("SNAME", rs.getString("SNAME"));
+            }
+            rs.close();
+            stat.close();
+            conn.close();
+        } catch (
+                SQLException e) {
+            System.out.println(e);
+        }
+        return map;
 
     }
 
