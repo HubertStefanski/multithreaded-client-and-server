@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 public class Client {
 
     private String clientOutputString(String input) {
-        return ("Client-1 @ " + new Date() + ":" + input + "\n");
+        return ("Client@ " + new Date() + ":" + input + "\n");
     }
 
     private CountDownLatch latch = new CountDownLatch(1);
@@ -34,7 +34,7 @@ public class Client {
         new Client();
     }
 
-    public void panelSwap(JFrame frame, JPanel oldPanel , JPanel newPanel) {
+    public void panelSwap(JFrame frame, JPanel oldPanel, JPanel newPanel) {
         frame.setVisible(false);
         frame.remove(oldPanel);
         frame.add(newPanel);
@@ -68,13 +68,16 @@ public class Client {
 
             // Create an output stream to send data to the server
             toServer = new DataOutputStream(socket.getOutputStream());
-
+//            getLogs(fromServer);
             while (true) {
-                mainView.logArea.append(fromServer.readUTF());
-                if (fromServer.readUTF().contains("student authenticated")) {
-                    panelSwap(frame, loginMenu.rootPanel, aocMenu.rootPanel);
-                    mainView.logArea.append(clientOutputString("authenticated and connected"));
-                    mainView.logArea.append(fromServer.readUTF());
+
+                String read = fromServer.readUTF();
+                mainView.logArea.append(read);
+                if (read.contains("Welcome")) {
+//                    panelSwap(frame, loginMenu.rootPanel, aocMenu.rootPanel);
+                    frame.remove(loginMenu.rootPanel);
+                    frame.add(aocMenu.rootPanel);
+                    mainView.logArea.append(read);
                 }
             }
 
@@ -128,6 +131,10 @@ public class Client {
         public void actionPerformed(ActionEvent e) {
             try {
                 toServer.writeUTF("EXIT");
+                while (true) {
+                    mainView.logArea.append(fromServer.readUTF());
+                }
+
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }

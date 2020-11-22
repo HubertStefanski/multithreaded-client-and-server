@@ -11,26 +11,30 @@ class ClientHandler extends Thread {
     private final DataInputStream inputFromClient;
     private final DataOutputStream outputToClient;
     private final Socket s;
+    private final String url;
 
-    private String handlerOutputString(String input) {
-        return ("Handler-1 @ " + ":" + input + "\n");
-    }
 
     // Constructor
-    public ClientHandler(Socket s, DataInputStream inputFromClient, DataOutputStream outputToClient) {
+    public ClientHandler(Socket s, DataInputStream inputFromClient, DataOutputStream outputToClient,String url) {
         this.s = s;
         this.inputFromClient = inputFromClient;
         this.outputToClient = outputToClient;
-    }
+        this.url = url;
 
+    }
+    private String handlerOutputString(String input) {
+        return ("Handler@ " + url + ":" + input + "\n");
+    }
     @Override
     public void run() {
+
+
         while (true) {
             try {
-                if (inputFromClient.readUTF().equals("") || inputFromClient.readUTF().length() <= 0) {
+                String received = inputFromClient.readUTF();
+                if (received.equals("") || received.length() <= 0) {
                     outputToClient.writeUTF(handlerOutputString("student ID cannot be empty"));
                 }
-                String received = inputFromClient.readUTF();
                 if (ServerHelper.authenticate(received)) {
                     Map map = ServerHelper.getUser(received);
                     outputToClient.writeUTF(handlerOutputString("Welcome " + map.get("FNAME") + " " + map.get("SNAME")));
@@ -39,14 +43,14 @@ class ClientHandler extends Thread {
                 }
 
                 if (inputFromClient.readUTF().equals("EXIT")) {
-                    System.out.println("Client " + this.s + " sends exit...");
-                    System.out.println("Closing this connection.");
+                    outputToClient.writeUTF(handlerOutputString("Client " + this.s + " sends exit..."));
+                    outputToClient.writeUTF(handlerOutputString("Closing this connection."));
+                    Thread.sleep(5000);
                     this.s.close();
-                    System.out.println("Connection closed");
                     break;
                 }
 
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }

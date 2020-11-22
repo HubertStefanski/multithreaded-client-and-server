@@ -10,7 +10,7 @@ import java.util.Date;
 public class Server {
 
     private String serverOutputString(String input) {
-        return ("Server-1 @ " + new Date() + ":" + input + "\n");
+        return ("Server@ " + new Date() + ":" + input + "\n");
     }
 
     public static void main(String[] args) {
@@ -40,7 +40,7 @@ public class Server {
 
                 outputToClient.writeUTF(serverOutputString("Server started at " + new Date() + '\n'));
 
-                Thread t = new ClientHandler(s, inputFromClient, outputToClient);
+                Thread t = new ClientHandler(s, inputFromClient, outputToClient,String.format("%s:%s", s.getLocalAddress(), s.getLocalPort()));
                 t.start();
 
             } catch (IOException e) {

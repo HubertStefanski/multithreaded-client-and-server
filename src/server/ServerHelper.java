@@ -1,6 +1,7 @@
 package server;
 
 import java.sql.*;
+import java.util.Collections;
 import java.util.Map;
 
 public class ServerHelper {
@@ -36,7 +37,7 @@ public class ServerHelper {
                 totreq+=1;
 
                 String updatequery = String.format("UPDATE `students` SET TOT_REQ = %s  WHERE `STUD_ID` = %s",totreq,studentID);
-                stat.executeQuery(updatequery);
+                stat.executeUpdate(updatequery);
             }
             rs.close();
             stat.close();
@@ -50,7 +51,7 @@ public class ServerHelper {
     }
 
     public static Map<String, String> getUser(String studentID) {
-        Map<String, String> map = null;
+        Map<String, String> map = new java.util.HashMap<>(Collections.emptyMap());
 
         try {
             Connection conn = invokeConnection();
