@@ -11,18 +11,17 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 
 public class Client {
 
-    private String clientOutputString(String input) {
-        return ("Client@ " + new Date() + ":" + input + "\n");
-    }
 
-    private CountDownLatch latch = new CountDownLatch(1);
+
     private DataOutputStream toServer;
     private DataInputStream fromServer;
     private final MainView mainView = new MainView();
@@ -30,19 +29,12 @@ public class Client {
     private final AOCMenu aocMenu = new AOCMenu();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         new Client();
     }
 
-    public void panelSwap(JFrame frame, JPanel oldPanel, JPanel newPanel) {
-        frame.setVisible(false);
-        frame.remove(oldPanel);
-        frame.add(newPanel);
-        frame.setVisible(true);
-    }
-
-
-    public Client() {
+    String clientUrl = InetAddress.getLocalHost().toString();
+    public Client() throws UnknownHostException {
         JFrame frame = new JFrame("Area Of Circle");
 
         mainView.rootPanel.add(loginMenu.rootPanel, BorderLayout.WEST);
@@ -57,6 +49,8 @@ public class Client {
 
 
         try {
+
+
             // Create a socket to connect to the server
             Socket socket = new Socket("localhost", 8000);
 
@@ -68,16 +62,13 @@ public class Client {
 
             // Create an output stream to send data to the server
             toServer = new DataOutputStream(socket.getOutputStream());
-//            getLogs(fromServer);
             while (true) {
 
                 String read = fromServer.readUTF();
                 mainView.logArea.append(read);
                 if (read.contains("Welcome")) {
-//                    panelSwap(frame, loginMenu.rootPanel, aocMenu.rootPanel);
                     frame.remove(loginMenu.rootPanel);
                     frame.add(aocMenu.rootPanel);
-                    mainView.logArea.append(read);
                 }
             }
 
@@ -86,12 +77,14 @@ public class Client {
         }
     }
 
-
+    private String clientOutputString(String input, String url) {
+        return ("Client@ " + url + " " + new Date() + ": " + input + "\n");
+    }
     private class LoginListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (loginMenu.loginField.getText() != null || loginMenu.loginField.getText().length() > 0) {
-                mainView.logArea.append(clientOutputString("processing login request for " + loginMenu.loginField.getText()));
+                mainView.logArea.append(clientOutputString("processing login request for " + loginMenu.loginField.getText(),clientUrl));
                 try {
                     toServer.writeUTF("LOGIN");
                     toServer.writeUTF(loginMenu.loginField.getText());
@@ -111,14 +104,14 @@ public class Client {
                     toServer.writeUTF("RADIUS");
                     // Get the radius from the text field
                     // Send the radius to the server
-                    toServer.writeUTF(String.format("%s",Double.parseDouble(aocMenu.radiusField.getText().trim())));
+                    toServer.writeUTF(String.format("%s", Double.parseDouble(aocMenu.radiusField.getText().trim())));
                     // Display to the text area
-                    mainView.logArea.append(clientOutputString("Radius is " + Double.parseDouble(aocMenu.radiusField.getText().trim()) + "\n"));
+                    mainView.logArea.append(clientOutputString("Radius is " + Double.parseDouble(aocMenu.radiusField.getText().trim()) + "\n",clientUrl));
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-            }else{
-                mainView.logArea.append(clientOutputString("cannot process a non-numeric value"));
+            } else {
+                mainView.logArea.append(clientOutputString("cannot process a non-numeric value",clientUrl));
             }
         }
     }
