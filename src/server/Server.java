@@ -46,28 +46,34 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Create data input and output streams
-        // Listen for a connection request
+
 
         while (true) {
             Socket s = null;
             try {
+                //Accept connection
                 s = serverSocket.accept();
+                //Get the url for the server
                 String url = String.format("%s:%s", s.getLocalAddress(), s.getLocalPort());
+                // Create data input and output streams
                 DataInputStream inputFromClient = new DataInputStream(s.getInputStream());
                 DataOutputStream outputToClient = new DataOutputStream(s.getOutputStream());
 
+                //Log to the user about new connection start
                 outputToClient.writeUTF(serverOutputString("Server connection started",url));
                 serverView.logArea.append(serverOutputString("Server connection started",url));
 
+                //Create a new clientHandler thread for new client
                 Thread t = new ClientHandler(s, inputFromClient, outputToClient,url,serverView.logArea);
+                //Log to the server about new client handler thread being started
                 serverView.logArea.append(serverOutputString("New handler started for client",url));
 
-
+                //Start the thread
                 t.start();
 
             } catch (IOException e) {
                 try {
+                    //If an exception is found close the socket
                     s.close();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
