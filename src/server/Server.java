@@ -1,10 +1,7 @@
 package server;
 
 import UI.ServerView;
-import client.Client;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,10 +13,11 @@ public class Server {
 
     private ServerView serverView = new ServerView();
 
-    private String serverOutputString(String input, String url) {
-        return ("Server@ " + url + " " + new Date() + ":" + input + "\n");
-    }
+    private int count = 0;
 
+    private String serverOutputString(String input, String url, int count) {
+        return ("Server- " + count + " @ " + url + " " + new Date() + ":" + input + "\n");
+    }
 
 
     public static void main(String[] args) {
@@ -29,8 +27,6 @@ public class Server {
 
     public Server() {
         serverView.createNewServerUI();
-
-
 
 
         // Create a server socket
@@ -56,13 +52,15 @@ public class Server {
                 DataOutputStream outputToClient = new DataOutputStream(s.getOutputStream());
 
                 //Log to the user about new connection start
-                outputToClient.writeUTF(serverOutputString("Server connection started",url));
-                serverView.logArea.append(serverOutputString("Server connection started",url));
+                outputToClient.writeUTF(serverOutputString("Server connection started", url, 1));
+
+                serverView.logArea.append(serverOutputString("Server connection started", url, 1));
 
                 //Create a new clientHandler thread for new client
-                Thread t = new ClientHandler(s, inputFromClient, outputToClient,url,serverView.logArea);
+                Thread t = new ClientHandler(s, inputFromClient, outputToClient, url, serverView.logArea, count);
                 //Log to the server about new client handler thread being started
-                serverView.logArea.append(serverOutputString("New handler started for client",url));
+                count += 1;
+                serverView.logArea.append(serverOutputString(String.format("New handler %s started for client",count), url, 1));
 
                 //Start the thread
                 t.start();

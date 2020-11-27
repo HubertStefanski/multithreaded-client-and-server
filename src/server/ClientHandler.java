@@ -14,20 +14,22 @@ class ClientHandler extends Thread {
     private final Socket s;
     private final String url;
     private final JTextArea serverTextArea;
+    private final int count;
 
 
     // Constructor
-    public ClientHandler(Socket s, DataInputStream inputFromClient, DataOutputStream outputToClient, String url, JTextArea serverTextArea) {
+    public ClientHandler(Socket s, DataInputStream inputFromClient, DataOutputStream outputToClient, String url, JTextArea serverTextArea, int count) {
         this.s = s;
         this.inputFromClient = inputFromClient;
         this.outputToClient = outputToClient;
         this.url = url;
         this.serverTextArea = serverTextArea;
+        this.count = count;
     }
 
     //Convenient string for returning information to the user with all variables
     private String handlerOutputString(String input) {
-        return ("Handler@ " + url + ":" + input + "\n");
+        return ("Handler-" + count + " @ " + url + ":" + input + "\n");
     }
 
     @Override

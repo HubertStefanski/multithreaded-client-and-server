@@ -24,7 +24,7 @@ public class Client {
     private final MainView mainView = new MainView();
     private final LoginMenu loginMenu = new LoginMenu();
     private final AOCMenu aocMenu = new AOCMenu();
-
+    private final JPanel loginComp = loginMenu.getLoginUIComponent();
 
     public static void main(String[] args) throws UnknownHostException {
         new Client();
@@ -36,7 +36,7 @@ public class Client {
         JFrame frame = new JFrame("Area Of Circle");
 
         //Create new login menu for the user, assign to the left of contentPane
-        mainView.rootPanel.add(loginMenu.getLoginUIComponent(), BorderLayout.WEST);
+        mainView.rootPanel.add(loginComp, BorderLayout.WEST);
         //Create new logging area for the mainview, assign to the right
         mainView.rootPanel.add(mainView.logArea, BorderLayout.EAST);
         //Set main conent pain
@@ -47,9 +47,6 @@ public class Client {
         frame.setVisible(true);
         //Add listeners for buttons
         loginMenu.loginButton.addActionListener(new LoginListener());
-
-        aocMenu.sendButton.addActionListener(new AocListener());
-        aocMenu.exitButton.addActionListener(new exitListener());
 
 
         try {
@@ -71,8 +68,12 @@ public class Client {
                 //Check the response for authorised message
                 if (read.contains("Welcome")) {
                     //remove the login menu from the left side and add area of circle controls
-                    frame.remove(loginMenu.rootPanel);
-                    frame.add(aocMenu.rootPanel);
+                    frame.setVisible(false);
+                    frame.remove(loginComp);
+                    frame.add(aocMenu.getAOCComponent());
+                    aocMenu.getSendButton().addActionListener(new AocListener());
+                    aocMenu.getExitButton().addActionListener(new exitListener());
+                    frame.setVisible(true);
                 }
             }
 
