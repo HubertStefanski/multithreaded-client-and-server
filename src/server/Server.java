@@ -28,12 +28,8 @@ public class Server {
     }
 
     public Server() {
-        JFrame frame = new JFrame("Server");
+        serverView.createNewServerUI();
 
-        frame.setContentPane(serverView.rootPanel);
-        frame.setSize(750, 750);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
 
 
 
@@ -42,7 +38,7 @@ public class Server {
         try {
 
             serverSocket = new ServerSocket(8000);
-            serverView.logArea.append("Server Starting" + "\n");
+            serverView.getLogArea().append("Server Starting" + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
