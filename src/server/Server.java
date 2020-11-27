@@ -34,7 +34,7 @@ public class Server {
         try {
 
             serverSocket = new ServerSocket(8000);
-            serverView.getLogArea().append("Server Starting" + "\n");
+            serverView.getLogArea().append("Server Started at socket :  " + serverSocket + " "  + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

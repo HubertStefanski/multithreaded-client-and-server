@@ -5,6 +5,7 @@ import UI.LoginMenu;
 import UI.MainView;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,11 +37,10 @@ public class Client {
         JFrame frame = new JFrame("Area Of Circle");
 
         //Create new login menu for the user, assign to the left of contentPane
-        mainView.rootPanel.add(loginComp, BorderLayout.WEST);
+        mainView.setNestPanel(loginComp);
         //Create new logging area for the mainview, assign to the right
-        mainView.rootPanel.add(mainView.logArea, BorderLayout.EAST);
-        //Set main conent pain
-        frame.setContentPane(mainView.rootPanel);
+        //Set main content pane
+        frame.setContentPane(mainView.getMainUI());
         frame.setSize(750, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Display the window to the user

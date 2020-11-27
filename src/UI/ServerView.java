@@ -28,7 +28,7 @@ public class ServerView {
     public void createNewServerUI() {
 
         JFrame frame = new JFrame("Server");
-        setLogArea(new JTextArea());
+        setLogArea(new JTextArea("------------------------------------ L - O - G - S ------------------------------------------------- \n"));
         setRootPanel(new JPanel(new BorderLayout(20, 10)));
         getRootPanel().add(getLogArea());
         frame.setContentPane(getRootPanel());
