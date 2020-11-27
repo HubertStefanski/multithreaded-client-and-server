@@ -36,7 +36,7 @@ public class Client {
         JFrame frame = new JFrame("Area Of Circle");
 
         //Create new login menu for the user, assign to the left of contentPane
-        mainView.rootPanel.add(loginMenu.rootPanel, BorderLayout.WEST);
+        mainView.rootPanel.add(loginMenu.getLoginUIComponent(), BorderLayout.WEST);
         //Create new logging area for the mainview, assign to the right
         mainView.rootPanel.add(mainView.logArea, BorderLayout.EAST);
         //Set main conent pain

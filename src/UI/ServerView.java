@@ -6,6 +6,7 @@ import java.awt.*;
 public class ServerView {
 
     public JPanel rootPanel;
+    public JTextArea logArea;
 
     public JTextArea getLogArea() {
         return logArea;
@@ -15,7 +16,6 @@ public class ServerView {
         this.logArea = logArea;
     }
 
-    public JTextArea logArea;
 
     public JPanel getRootPanel() {
         return rootPanel;
